@@ -16,15 +16,35 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Dynamic Database and Uploads Paths for Vercel Serverless compatibility
+const isVercel = process.env.VERCEL === '1' || !!process.env.VERCEL;
+const uploadsDir = isVercel ? '/tmp/uploads' : path.join(__dirname, 'uploads');
+const dbPath = isVercel ? '/tmp/database.db' : path.join(__dirname, 'database.db');
+
+// Handle Vercel temp database copy
+if (isVercel) {
+    const sourceDb = path.join(process.cwd(), 'database.db');
+    if (fs.existsSync(sourceDb)) {
+        try {
+            if (!fs.existsSync(dbPath)) {
+                fs.copyFileSync(sourceDb, dbPath);
+                console.log('Database copied to /tmp successfully.');
+            }
+        } catch (copyErr) {
+            console.error('Failed to copy database to /tmp:', copyErr.message);
+        }
+    }
+}
+
 // Ensure uploads folder exists
-if (!fs.existsSync('uploads')) {
-    fs.mkdirSync('uploads');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
 // Multer Storage Configuration for Photos
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/');
+        cb(null, uploadsDir);
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -46,7 +66,6 @@ const upload = multer({
 });
 
 // Database Setup
-const dbPath = path.join(__dirname, 'database.db');
 const db = new sqlite3.Database(dbPath, (err) => {
     if (err) {
         console.error('Error opening database:', err.message);
@@ -565,7 +584,7 @@ app.put('/api/siblings/:id', authenticateToken, upload.single('photo'), (req, re
                 photoPath = `/uploads/${req.file.filename}`;
                 // Optional: Delete old image on disk to save space
                 if (currentSib.photo) {
-                    const oldPath = path.join(__dirname, currentSib.photo);
+                    const oldPath = path.join(uploadsDir, path.basename(currentSib.photo));
                     if (fs.existsSync(oldPath)) {
                         fs.unlinkSync(oldPath);
                     }
@@ -606,7 +625,7 @@ app.delete('/api/siblings/:id', authenticateToken, (req, res) => {
 
         // Delete photo from disk if present
         if (currentSib.photo) {
-            const oldPath = path.join(__dirname, currentSib.photo);
+            const oldPath = path.join(uploadsDir, path.basename(currentSib.photo));
             if (fs.existsSync(oldPath)) {
                 fs.unlinkSync(oldPath);
             }
@@ -625,7 +644,7 @@ app.post('/api/siblings/reset', authenticateToken, (req, res) => {
     db.all("SELECT photo FROM siblings WHERE photo IS NOT NULL", (err, rows) => {
         if (!err && rows) {
             rows.forEach(row => {
-                const oldPath = path.join(__dirname, row.photo);
+                const oldPath = path.join(uploadsDir, path.basename(row.photo));
                 if (fs.existsSync(oldPath)) {
                     fs.unlinkSync(oldPath);
                 }
@@ -674,17 +693,21 @@ app.post('/api/siblings/reset', authenticateToken, (req, res) => {
 });
 
 // Serve Static Uploads
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(uploadsDir));
 
 // Serve Root Frontend Static Files
-app.use(express.static(path.join(__dirname, '.')));
+app.use(express.static(path.join(process.cwd())));
 
 // Fallback for Admin page
 app.get('/admin', (req, res) => {
-    res.sendFile(path.join(__dirname, 'admin.html'));
+    res.sendFile(path.join(process.cwd(), 'admin.html'));
 });
 
 // Start Server
-app.listen(PORT, () => {
-    console.log(`Server is running at http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production' && !isVercel) {
+    app.listen(PORT, () => {
+        console.log(`Server is running at http://localhost:${PORT}`);
+    });
+}
+
+module.exports = app;
