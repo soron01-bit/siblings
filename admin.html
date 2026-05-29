@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal | Sterling Chronicle</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="admin-body">
+    <!-- Navigation -->
+    <nav class="navbar" id="main-nav">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <span class="logo-icon"><i class="fa-solid fa-people-roof"></i></span>
+                <span class="logo-text">Sterling Chronicle</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="/" class="nav-link"><i class="fa-solid fa-arrow-left" style="margin-right: 6px;"></i>Back to Site</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark/light theme">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="admin-container" id="admin-container">
+        <!-- Views will be dynamically loaded here by admin.js -->
+        <div class="auth-card" id="auth-view" style="display: none;">
+            <h2 class="auth-title">Admin <span class="highlight">Portal</span></h2>
+            
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="tab-login">Log In</button>
+                <button class="auth-tab" id="tab-signup">Sign Up</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="auth-form">
+                <div class="auth-alert error" id="login-error"></div>
+                <div class="auth-alert success" id="login-success"></div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="login-username">Username</label>
+                    <input type="text" id="login-username" class="form-control" placeholder="Enter admin username" required autocomplete="username">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="login-password">Password</label>
+                    <input type="password" id="login-password" class="form-control" placeholder="Enter password" required autocomplete="current-password">
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">
+                    <i class="fa-solid fa-right-to-bracket"></i> Authenticate
+                </button>
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signup-form" class="auth-form" style="display: none;">
+                <div class="auth-alert error" id="signup-error"></div>
+                <div class="auth-alert success" id="signup-success"></div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="signup-username">Username</label>
+                    <input type="text" id="signup-username" class="form-control" placeholder="Choose admin username" required autocomplete="username">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="signup-password">Password</label>
+                    <input type="password" id="signup-password" class="form-control" placeholder="Create strong password" required autocomplete="new-password">
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">
+                    <i class="fa-solid fa-user-plus"></i> Create Account
+                </button>
+            </form>
+        </div>
+
+        <!-- Dashboard View (Hidden by default) -->
+        <div class="admin-dashboard" id="dashboard-view" style="display: none;">
+            <div class="admin-header-row">
+                <div>
+                    <h2 class="section-title" style="font-size: 1.8rem; margin: 0;">Chronicle Management</h2>
+                    <p class="admin-welcome" id="admin-welcome-text">Welcome back, Administrator</p>
+                </div>
+                <div class="admin-header-actions">
+                    <button class="btn btn-primary btn-sm" id="btn-add-sibling">
+                        <i class="fa-solid fa-plus"></i> Add Sibling
+                    </button>
+                    <button class="btn btn-secondary btn-sm" id="btn-reset-db" style="background-color: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); color: #f87171;">
+                        <i class="fa-solid fa-rotate-left"></i> Reset Database
+                    </button>
+                    <button class="btn btn-secondary btn-sm" id="btn-logout">
+                        <i class="fa-solid fa-right-from-bracket"></i> Log Out
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table list -->
+            <div class="admin-table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Birth Order / ID</th>
+                            <th>Sibling Identity</th>
+                            <th>Occupation & Role</th>
+                            <th>Age</th>
+                            <th>Category</th>
+                            <th style="text-align: right;">Operations</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sibling-table-body">
+                        <!-- Dynamic list of siblings -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Admin Edit/Add Modal Overlay -->
+    <div class="modal-overlay" id="admin-form-modal" aria-hidden="true" role="dialog">
+        <div class="modal-container" style="max-width: 750px;">
+            <button class="modal-close-btn" id="modal-close" aria-label="Close modal">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="modal-content">
+                <div class="edit-form-container" style="padding: 10px 0;">
+                    <h2 class="form-title" id="form-modal-title">
+                        <i class="fa-solid fa-pen-to-square"></i> <span id="form-action-text">Edit Sibling Profile</span>
+                    </h2>
+                    
+                    <form id="admin-sibling-form" class="form-grid">
+                        <input type="hidden" id="sibling-id">
+                        
+                        <!-- Upload Photo -->
+                        <div class="form-group full-width">
+                            <label class="form-label">Profile Image Cover</label>
+                            <div class="photo-upload-container">
+                                <div class="upload-preview" id="admin-photo-preview">S</div>
+                                <div class="file-upload-wrapper">
+                                    <button type="button" class="file-upload-btn"><i class="fa-solid fa-image"></i> Select Photo Asset</button>
+                                    <input type="file" id="admin-photo-input" accept="image/*">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Basic Information -->
+                        <div class="form-group">
+                            <label class="form-label" for="sib-name">Full Name</label>
+                            <input type="text" id="sib-name" class="form-control" placeholder="e.g. Eleanor Sterling" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="sib-nickname">Nickname</label>
+                            <input type="text" id="sib-nickname" class="form-control" placeholder="e.g. Ellie" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="sib-role">Role/Designation</label>
+                            <input type="text" id="sib-role" class="form-control" placeholder="e.g. Marine Biologist" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="sib-age">Age</label>
+                            <input type="number" id="sib-age" class="form-control" placeholder="e.g. 24" required min="1" max="120">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="sib-category">Aesthetic Group</label>
+                            <div class="select-wrapper">
+                                <select id="sib-category" class="sort-select" style="width: 100%; border: 1px solid var(--glass-border); background-color: var(--bg-secondary); border-radius: var(--radius-md); padding: 10px 14px; font-family: var(--font-body); color: var(--text-primary); appearance: none; -webkit-appearance: none;">
+                                    <option value="creatives">Creatives</option>
+                                    <option value="scholars">Scholars</option>
+                                    <option value="builders">Builders</option>
+                                    <option value="adventurers">Adventurers</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down select-arrow" style="right: 15px; pointer-events: none;"></i>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="sib-color-preset">Card Color Palette</label>
+                            <div class="select-wrapper">
+                                <select id="sib-color-preset" class="sort-select" style="width: 100%; border: 1px solid var(--glass-border); background-color: var(--bg-secondary); border-radius: var(--radius-md); padding: 10px 14px; font-family: var(--font-body); color: var(--text-primary); appearance: none; -webkit-appearance: none;">
+                                    <option value="amber">Amber Sun (Gold / Orange)</option>
+                                    <option value="blue">Cyber Sky (Sky Blue / Slate)</option>
+                                    <option value="rose">Neon Rose (Pink / Rose)</option>
+                                    <option value="emerald">Emerald Forest (Green / Mint)</option>
+                                    <option value="purple">Royal Amethyst (Violet / Lavender)</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down select-arrow" style="right: 15px; pointer-events: none;"></i>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="sib-zodiac">Zodiac Sign</label>
+                            <div class="select-wrapper">
+                                <select id="sib-zodiac" class="sort-select" style="width: 100%; border: 1px solid var(--glass-border); background-color: var(--bg-secondary); border-radius: var(--radius-md); padding: 10px 14px; font-family: var(--font-body); color: var(--text-primary); appearance: none; -webkit-appearance: none;">
+                                    <option value="Aries">Aries</option>
+                                    <option value="Taurus">Taurus</option>
+                                    <option value="Gemini">Gemini</option>
+                                    <option value="Cancer">Cancer</option>
+                                    <option value="Leo">Leo</option>
+                                    <option value="Virgo">Virgo</option>
+                                    <option value="Libra">Libra</option>
+                                    <option value="Scorpio">Scorpio</option>
+                                    <option value="Sagittarius">Sagittarius</option>
+                                    <option value="Capricorn">Capricorn</option>
+                                    <option value="Aquarius">Aquarius</option>
+                                    <option value="Pisces">Pisces</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down select-arrow" style="right: 15px; pointer-events: none;"></i>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="sib-birth-order">Birth Order Label</label>
+                            <input type="text" id="sib-birth-order" class="form-control" placeholder="e.g. 5th Sibling or Twin A" required>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label" for="sib-quote">Signature Quote</label>
+                            <input type="text" id="sib-quote" class="form-control" placeholder="e.g. Always keep searching." required>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label" for="sib-bio">Biography</label>
+                            <textarea id="sib-bio" class="form-control" placeholder="Tell their unique backstory..." style="min-height: 100px;" required></textarea>
+                        </div>
+
+                        <!-- Key Aptitudes (3 custom inputs) -->
+                        <div class="form-group full-width">
+                            <label class="form-label">Key Aptitudes</label>
+                            <div class="range-slider-group">
+                                <div class="slider-row">
+                                    <div style="display: flex; gap: 12px; margin-bottom: 4px;">
+                                        <input type="text" id="skill-name-0" class="form-control" placeholder="Skill Name 1" required style="flex-grow: 1; height: 36px; padding: 6px 12px; font-size: 0.85rem;">
+                                        <span class="slider-value" id="val-preview-0" style="align-self: center; font-size: 0.85rem; width: 45px; text-align: right;">90%</span>
+                                    </div>
+                                    <input type="range" class="slider-input admin-skill-slider" id="skill-val-0" min="0" max="100" value="90">
+                                </div>
+                                <div class="slider-row">
+                                    <div style="display: flex; gap: 12px; margin-bottom: 4px;">
+                                        <input type="text" id="skill-name-1" class="form-control" placeholder="Skill Name 2" required style="flex-grow: 1; height: 36px; padding: 6px 12px; font-size: 0.85rem;">
+                                        <span class="slider-value" id="val-preview-1" style="align-self: center; font-size: 0.85rem; width: 45px; text-align: right;">85%</span>
+                                    </div>
+                                    <input type="range" class="slider-input admin-skill-slider" id="skill-val-1" min="0" max="100" value="85">
+                                </div>
+                                <div class="slider-row">
+                                    <div style="display: flex; gap: 12px; margin-bottom: 4px;">
+                                        <input type="text" id="skill-name-2" class="form-control" placeholder="Skill Name 3" required style="flex-grow: 1; height: 36px; padding: 6px 12px; font-size: 0.85rem;">
+                                        <span class="slider-value" id="val-preview-2" style="align-self: center; font-size: 0.85rem; width: 45px; text-align: right;">80%</span>
+                                    </div>
+                                    <input type="range" class="slider-input admin-skill-slider" id="skill-val-2" min="0" max="100" value="80">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hobbies/Interests (3 custom text fields) -->
+                        <div class="form-group full-width">
+                            <label class="form-label">Hobbies & Interests (Names only)</label>
+                            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                                <input type="text" id="hobby-0" class="form-control" placeholder="Hobby 1" required style="flex: 1; min-width: 150px;">
+                                <input type="text" id="hobby-1" class="form-control" placeholder="Hobby 2" required style="flex: 1; min-width: 150px;">
+                                <input type="text" id="hobby-2" class="form-control" placeholder="Hobby 3" required style="flex: 1; min-width: 150px;">
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-actions full-width" style="margin-top: 16px; padding-top: 16px;">
+                            <button type="button" class="btn btn-secondary" id="admin-form-cancel">Cancel</button>
+                            <button type="submit" class="btn btn-primary" id="admin-form-submit"><i class="fa-solid fa-save"></i> Save Profile</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="admin.js"></script>
+</body>
+</html>

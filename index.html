@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Sterling Siblings | An Interactive Chronicle</title>
+    <!-- Meta Tags for SEO -->
+    <meta name="description" content="Explore the lives, personalities, birth timeline, and relationships of the 12 Sterling siblings in this interactive, modern chronicle.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="main-nav">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <span class="logo-icon"><i class="fa-solid fa-people-roof"></i></span>
+                <span class="logo-text">Sterling Chronicle</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#hero" class="nav-link active">Home</a></li>
+                <li><a href="#directory" class="nav-link">Siblings</a></li>
+                <li><a href="#timeline" class="nav-link">Timeline</a></li>
+                <li><a href="#connections" class="nav-link">Connections</a></li>
+                <li><a href="/admin" class="nav-link"><i class="fa-solid fa-lock" style="margin-right: 4px;"></i>Admin</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark/light theme">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header id="hero" class="hero-section">
+        <div class="hero-background"></div>
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="family-badge">Est. 1994 &bull; The Sterling Family</div>
+                <h1 class="hero-title">Meet the <span class="highlight">Sterling Siblings</span></h1>
+                <p class="hero-subtitle">Twelve unique paths, one shared heritage. Explore the interactive stories, timelines, and relationships of our close-knit modern family.</p>
+                <div class="hero-cta-group">
+                    <a href="#directory" class="btn btn-primary">Explore Profiles</a>
+                    <a href="#timeline" class="btn btn-secondary">View Birth Timeline</a>
+                </div>
+            </div>
+            <div class="hero-image-wrapper">
+                <img src="family_portrait.png" alt="The Sterling Siblings Family Portrait" class="hero-image">
+                <div class="hero-image-glow"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Siblings Directory Section -->
+    <section id="directory" class="directory-section">
+        <div class="section-header">
+            <span class="section-tag">Family Directory</span>
+            <h2 class="section-title">The Twelve Siblings</h2>
+            <p class="section-description">Search, sort, and filter through the siblings to learn about their careers, creative endeavors, and personalities.</p>
+        </div>
+
+        <!-- Controls (Filters, Search, Sort) -->
+        <div class="controls-container">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="sibling-search" placeholder="Search by name, hobby, occupation...">
+                <button id="clear-search" class="clear-search-btn" style="display: none;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="filters-wrapper">
+                <div class="filter-group">
+                    <label class="control-label">Category</label>
+                    <div class="filter-tags" id="category-filters">
+                        <button class="filter-tag active" data-category="all">All</button>
+                        <button class="filter-tag" data-category="creatives">Creatives</button>
+                        <button class="filter-tag" data-category="scholars">Scholars</button>
+                        <button class="filter-tag" data-category="builders">Builders</button>
+                        <button class="filter-tag" data-category="adventurers">Adventurers</button>
+                    </div>
+                </div>
+
+                <div class="sort-group">
+                    <label class="control-label" for="sibling-sort">Sort By</label>
+                    <div class="select-wrapper">
+                        <select id="sibling-sort" class="sort-select">
+                            <option value="birth-order-asc">Birth Order (Oldest First)</option>
+                            <option value="birth-order-desc">Birth Order (Youngest First)</option>
+                            <option value="name-asc">Name (A-Z)</option>
+                            <option value="name-desc">Name (Z-A)</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down select-arrow"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Siblings Grid -->
+        <div class="siblings-grid" id="siblings-grid">
+            <!-- Cards will be dynamically injected by JS -->
+        </div>
+
+        <!-- No Results Fallback -->
+        <div class="no-results" id="no-results" style="display: none;">
+            <i class="fa-solid fa-user-slash no-results-icon"></i>
+            <h3>No siblings found</h3>
+            <p>Try adjusting your search filters or spelling.</p>
+            <button id="reset-filters" class="btn btn-secondary btn-sm">Reset Filters</button>
+        </div>
+    </section>
+
+    <!-- Timeline Section -->
+    <section id="timeline" class="timeline-section">
+        <div class="section-header">
+            <span class="section-tag">Chronology</span>
+            <h2 class="section-title">Timeline of Birth Order</h2>
+            <p class="section-description">A journey through the years showing the spacing, birth order, and key milestones of the Sterling siblings.</p>
+        </div>
+
+        <div class="timeline-container">
+            <div class="timeline-line"></div>
+            <div class="timeline-items" id="timeline-items">
+                <!-- Timeline elements will be dynamically injected by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Sibling Connections Section -->
+    <section id="connections" class="connections-section">
+        <div class="section-header">
+            <span class="section-tag">Dynamics</span>
+            <h2 class="section-title">Sibling Relationships & Circles</h2>
+            <p class="section-description">Though distinct individuals, the Sterling siblings share close-knit circles and collaborations. Click a circle to explore their bonds.</p>
+        </div>
+
+        <div class="connections-container">
+            <div class="connections-circles" id="connections-circles">
+                <!-- Dynamic connection clusters -->
+            </div>
+            <div class="connection-details-panel" id="connection-details-panel">
+                <div class="panel-placeholder">
+                    <i class="fa-solid fa-share-nodes placeholder-icon"></i>
+                    <h3>Select a Relationship Circle</h3>
+                    <p>Click on any of the connection clusters on the left to see how they collaborate, study, or play together.</p>
+                </div>
+                <div class="panel-content" id="panel-content" style="display: none;">
+                    <!-- Details injected dynamically -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="family-footer">
+        <div class="footer-container">
+            <div class="footer-info">
+                <a href="#" class="logo">
+                    <span class="logo-icon"><i class="fa-solid fa-people-roof"></i></span>
+                    <span class="logo-text">Sterling Chronicle</span>
+                </a>
+                <p class="footer-quote">"Family is not an important thing. It's everything." &mdash; Michael J. Fox</p>
+            </div>
+            <div class="footer-links">
+                <div class="footer-link-group">
+                    <h4>Explore</h4>
+                    <ul>
+                        <li><a href="#hero">Home</a></li>
+                        <li><a href="#directory">Siblings Directory</a></li>
+                        <li><a href="#timeline">Timeline</a></li>
+                        <li><a href="#connections">Connection Circles</a></li>
+                        <li><a href="/admin">Admin Portal</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 The Sterling Family. Created with love &amp; premium craft.</p>
+        </div>
+    </footer>
+
+    <!-- Sibling Detail Modal -->
+    <div class="modal-overlay" id="sibling-modal" aria-hidden="true" role="dialog">
+        <div class="modal-container">
+            <button class="modal-close-btn" id="modal-close" aria-label="Close modal">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Modal Nav (Prev/Next) -->
+            <button class="modal-nav-btn prev-btn" id="modal-prev" aria-label="Previous sibling">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button class="modal-nav-btn next-btn" id="modal-next" aria-label="Next sibling">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+
+            <div class="modal-content" id="modal-dynamic-content">
+                <!-- Profile details injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+</html>
