@@ -696,11 +696,11 @@ app.post('/api/siblings/reset', authenticateToken, (req, res) => {
 app.use('/uploads', express.static(uploadsDir));
 
 // Serve Root Frontend Static Files
-app.use(express.static(path.join(process.cwd())));
+app.use(express.static(path.join(process.cwd(), 'public')));
 
 // Fallback for Admin page
 app.get('/admin', (req, res) => {
-    res.sendFile(path.join(process.cwd(), 'admin.html'));
+    res.sendFile(path.join(process.cwd(), 'public', 'admin.html'));
 });
 
 // Start Server
